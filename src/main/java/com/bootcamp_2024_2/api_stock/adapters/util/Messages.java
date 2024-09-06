@@ -15,6 +15,8 @@ public class Messages {
     public static final String DESCRIPTION_LENGTH_90_VALIDATION = "Description must be between 2 and 90 characters";
     public static final String DESCRIPTION_LENGTH_120_VALIDATION = "Description must be between 2 and 120 characters";
     public static final String DESCRIPTION_CANNOT_BE_NULL = "Field 'description' cannot be null";
+    public static final String BRANDS_RETRIEVED_SUCCESSFULLY = "Brands retrieved successfully";
+    public static final String GET_ALL_BRANDS_WITH_PAGINATION = "Get all brands with pagination";
     private Messages() {
         throw new UnsupportedOperationException("The Messages class cannot be instantiated");
     }
