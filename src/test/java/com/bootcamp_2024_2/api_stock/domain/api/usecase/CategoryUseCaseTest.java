@@ -1,24 +1,26 @@
 package com.bootcamp_2024_2.api_stock.domain.api.usecase;
-
+import com.bootcamp_2024_2.api_stock.adapters.driven.jpa.mysql.exception.ElementAlreadyExistsException;
 import com.bootcamp_2024_2.api_stock.domain.model.Category;
-import com.bootcamp_2024_2.api_stock.domain.model.PaginatedCategories;
 import com.bootcamp_2024_2.api_stock.domain.spi.ICategoryPersistencePort;
+import com.bootcamp_2024_2.api_stock.domain.util.PaginatedResult;
 import com.bootcamp_2024_2.api_stock.testData.CategoryFactory;
-import com.bootcamp_2024_2.api_stock.testData.PaginatedCategoriesFactory;
+import com.bootcamp_2024_2.api_stock.testData.PaginatedFactory;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.Collections;
 import java.util.Random;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class CategoryUseCaseTest {
 
-    private final Random random = new Random();
     @Mock
     private ICategoryPersistencePort categoryPersistencePort;
 
@@ -26,40 +28,76 @@ class CategoryUseCaseTest {
     private CategoryUseCase categoryUseCase;
 
     @Test
-    @DisplayName("Given a category, it must be inserted into the database.")
-    void saveCategory() {
-        //GIVEN (DADO)
+    void whenCategoryDoesNotExist_thenSaveCategory() {
+        // Given
         Category category = CategoryFactory.createCategory();
-        doNothing().when(categoryPersistencePort).saveCategory(category);
+        when(categoryPersistencePort.existsByName(category.getName())).thenReturn(false);
+        when(categoryPersistencePort.saveCategory(category)).thenReturn(category);
 
-        //WHEN (CUANDO)
-        categoryUseCase.saveCategory(category);
+        // When
+        Category result = categoryUseCase.saveCategory(category);
 
-        //THEN (ENTONCES)
-        verify(categoryPersistencePort, times(1)).saveCategory(category);
+        // Then
+        assertEquals(category, result);
+        verify(categoryPersistencePort).existsByName(category.getName());
+        verify(categoryPersistencePort).saveCategory(category);
     }
 
     @Test
-    @DisplayName("Given valid pagination parameters, it should return a list of categories paginated.")
-    void getAllCategories() {
+    void whenCategoryExists_thenThrowException() {
+        // Given
+        Category category = CategoryFactory.createCategory();
+        when(categoryPersistencePort.existsByName(category.getName())).thenReturn(true);
+
+        // When & Then
+        assertThrows(ElementAlreadyExistsException.class, () -> categoryUseCase.saveCategory(category));
+        verify(categoryPersistencePort).existsByName(category.getName());
+        verify(categoryPersistencePort, never()).saveCategory(any());
+    }
+
+    @Test
+    @DisplayName("Given valid pagination parameters, it should return a paginated list of categories.")
+    void getAllCategories_whenValidPaginationParameters() {
         // GIVEN
-        PaginatedCategories expectedPaginatedCategories = PaginatedCategoriesFactory.createPaginatedCategories();
+        PaginatedResult<Category> expectedPaginatedCategories = PaginatedFactory.createPaginatedCategories();
 
         int page = expectedPaginatedCategories.getCurrentPage();
         int size = expectedPaginatedCategories.getPageSize();
+        Random random = new Random();
         boolean ascendingOrder = random.nextBoolean();
 
         when(categoryPersistencePort.getAllCategories(page, size, ascendingOrder))
                 .thenReturn(expectedPaginatedCategories);
 
         // WHEN
-        PaginatedCategories result = categoryUseCase.getAllCategories(page, size, ascendingOrder);
+        PaginatedResult<Category> result = categoryUseCase.getAllCategories(page, size, ascendingOrder);
 
         // THEN
         assertEquals(expectedPaginatedCategories, result);
         verify(categoryPersistencePort, times(1)).getAllCategories(page, size, ascendingOrder);
     }
 
+    @Test
+    @DisplayName("Given no categories available, it should return an empty paginated result.")
+    void getAllCategories_whenNoCategoriesAvailable() {
+        // GIVEN
+        PaginatedResult<Category> emptyPaginatedCategories = PaginatedFactory.createPaginatedResult(Collections.emptyList(), 1, 10);
 
+        int page = 1;
+        int size = 10;
+        Random random = new Random();
+        boolean ascendingOrder = random.nextBoolean();
 
+        when(categoryPersistencePort.getAllCategories(page, size, ascendingOrder))
+                .thenReturn(emptyPaginatedCategories);
+
+        // WHEN
+        PaginatedResult<Category> result = categoryUseCase.getAllCategories(page, size, ascendingOrder);
+
+        // THEN
+        assertTrue(result.getItems().isEmpty());
+        assertEquals(0, result.getTotalItems());
+        verify(categoryPersistencePort, times(1)).getAllCategories(page, size, ascendingOrder);
+    }
 }
+

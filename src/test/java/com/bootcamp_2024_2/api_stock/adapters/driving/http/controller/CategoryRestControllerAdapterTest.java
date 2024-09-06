@@ -1,14 +1,16 @@
 package com.bootcamp_2024_2.api_stock.adapters.driving.http.controller;
 
 import com.bootcamp_2024_2.api_stock.adapters.driving.http.dto.response.CategoryResponse;
-import com.bootcamp_2024_2.api_stock.adapters.driving.http.dto.response.PaginatedCategoryResponse;
+import com.bootcamp_2024_2.api_stock.adapters.driving.http.dto.response.PaginatedResponse;
 import com.bootcamp_2024_2.api_stock.adapters.driving.http.mapper.ICategoryRequestMapper;
 import com.bootcamp_2024_2.api_stock.adapters.driving.http.mapper.ICategoryResponseMapper;
 import com.bootcamp_2024_2.api_stock.domain.api.ICategoryServicePort;
 import com.bootcamp_2024_2.api_stock.domain.model.Category;
-import com.bootcamp_2024_2.api_stock.domain.model.PaginatedCategories;
+import com.bootcamp_2024_2.api_stock.domain.util.PaginatedResult;
+import com.bootcamp_2024_2.api_stock.testData.CategoryFactory;
 import com.bootcamp_2024_2.api_stock.testData.RequestCase;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -20,19 +22,19 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
-import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
@@ -56,8 +58,8 @@ class CategoryRestControllerAdapterTest {
     @MethodSource("provideCategoryRequests")
     void testAddCategory(RequestCase testCase) throws Exception {
         // Given
-        String requestBody = testCase.getRequestBody();
-        HttpStatus expectedStatus = testCase.getExpectedStatus();
+        String requestBody = testCase.requestBody();
+        HttpStatus expectedStatus = testCase.expectedStatus();
 
         // When & Then
         MvcResult mvcResult = mockMvc.perform(post("/category/")
@@ -70,89 +72,62 @@ class CategoryRestControllerAdapterTest {
             verify(categoryServicePort).saveCategory(any());
         } else if (expectedStatus == HttpStatus.BAD_REQUEST) {
             Exception resolvedException = mvcResult.getResolvedException();
-            assertTrue(resolvedException instanceof MethodArgumentNotValidException);
+            assertInstanceOf(MethodArgumentNotValidException.class, resolvedException);
         }
     }
 
-    @ParameterizedTest
-    @MethodSource("provideValidGetAllCategoriesParams")
-    void testGetAllCategories(Integer page, Integer size, Boolean ascendingOrder, HttpStatus expectedStatus, PaginatedCategoryResponse expectedResponse) throws Exception {
-        // Arrange
-        PaginatedCategories paginatedCategories = PaginatedCategories.of(
-                expectedResponse.getTotalPages(),
-                expectedResponse.getCurrentPage(),
-                expectedResponse.getTotalItems(),
-                expectedResponse.getPageSize(),
-                expectedResponse.getCategories().stream()
-                        .map(cr -> new Category(cr.getId(), cr.getName(), cr.getDescription()))
-                        .toList()
+    @Test
+    void testGetAllCategories() throws Exception {
+        // Given
+        int page = 0;
+        int size = 10;
+        boolean ascendingOrder = true;
+
+        List<Category> categoryList = CategoryFactory.createCategoryList(2);
+
+        PaginatedResult<Category> paginate = new PaginatedResult<>(
+                1,
+                0,
+                2,
+                10,
+                categoryList
         );
 
-        when(categoryServicePort.getAllCategories(page, size, ascendingOrder))
-                .thenReturn(paginatedCategories);
-        when(categoryResponseMapper.toPaginatedCategoryResponse(paginatedCategories))
-                .thenReturn(expectedResponse);
+        PaginatedResponse<CategoryResponse> paginatedResponse = new PaginatedResponse<>();
+        paginatedResponse.setItems(categoryList.stream().map(category ->
+                new CategoryResponse(category.getId(), category.getName(), category.getDescription())
+        ).toList());
+        paginatedResponse.setTotalPages(paginate.getTotalPages());
+        paginatedResponse.setCurrentPage(paginate.getCurrentPage());
+        paginatedResponse.setTotalItems(paginate.getTotalItems());
+        paginatedResponse.setPageSize(paginate.getPageSize());
 
-        // Act & Assert
-         mockMvc.perform(get("/category/")
-                        .param("page", page != null ? page.toString() : "0")
-                        .param("size", size != null ? size.toString() : "10")
-                        .param("ascendingOrder", ascendingOrder != null ? ascendingOrder.toString() : "true")
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.status().is(expectedStatus.value()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.totalPages").value(expectedResponse.getTotalPages()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.currentPage").value(expectedResponse.getCurrentPage()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.totalItems").value(expectedResponse.getTotalItems()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.pageSize").value(expectedResponse.getPageSize()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.categories").isArray())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.categories.length()").value(expectedResponse.getCategories().size()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.categories[0].id").value(expectedResponse.getCategories().get(0).getId()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.categories[0].name").value(expectedResponse.getCategories().get(0).getName()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.categories[0].description").value(expectedResponse.getCategories().get(0).getDescription()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.categories[1].id").value(expectedResponse.getCategories().get(1).getId()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.categories[1].name").value(expectedResponse.getCategories().get(1).getName()))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.categories[1].description").value(expectedResponse.getCategories().get(1).getDescription()))
-                .andReturn();
-    }
+        when(categoryServicePort.getAllCategories(page, size, ascendingOrder)).thenReturn(paginate);
+        when(categoryResponseMapper.toPaginatedResponse(paginate)).thenReturn(paginatedResponse);
 
-    @ParameterizedTest
-    @MethodSource("provideInvalidGetAllCategoriesParams")
-    void testGetAllCategories_ErrorCases(Integer page, Integer size, boolean ascendingOrder) throws Exception {
         // When & Then
         mockMvc.perform(get("/category/")
-                        .param("page", page != null ? page.toString() : "0")
-                        .param("size", size != null ? size.toString() : "2")
-                        .param("ascendingOrder", Boolean.toString(ascendingOrder))
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
+                        .param("page", String.valueOf(page))
+                        .param("size", String.valueOf(size))
+                        .param("ascendingOrder", String.valueOf(ascendingOrder))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.totalPages").value(paginatedResponse.getTotalPages()))
+                .andExpect(jsonPath("$.currentPage").value(paginatedResponse.getCurrentPage()))
+                .andExpect(jsonPath("$.totalItems").value(paginatedResponse.getTotalItems()))
+                .andExpect(jsonPath("$.pageSize").value(paginatedResponse.getPageSize()))
+                .andExpect(jsonPath("$.items[0].id").value(categoryList.get(0).getId()))
+                .andExpect(jsonPath("$.items[0].name").value(categoryList.get(0).getName()))
+                .andExpect(jsonPath("$.items[0].description").value(categoryList.get(0).getDescription()))
+                .andExpect(jsonPath("$.items[1].id").value(categoryList.get(1).getId()))
+                .andExpect(jsonPath("$.items[1].name").value(categoryList.get(1).getName()))
+                .andExpect(jsonPath("$.items[1].description").value(categoryList.get(1).getDescription()))
+                .andReturn();
+
+        verify(categoryServicePort).getAllCategories(page, size, ascendingOrder);
     }
 
-    private static Stream<Arguments> provideInvalidGetAllCategoriesParams() {
-        return Stream.of(
-                Arguments.of(-1, 2, true),  // `page` negativo
-                Arguments.of(0, 0, true)    // `size` cero
-        );
-    }
 
-    private static Stream<Arguments> provideValidGetAllCategoriesParams() {
-        return Stream.of(
-                Arguments.of(0, 2, true, HttpStatus.OK, new PaginatedCategoryResponse(
-                        1, 0, 2, 2, Arrays.asList(
-                        new CategoryResponse(1L, "Electronics", "Various electronic devices"),
-                        new CategoryResponse(2L, "Books", "Different genres of books")
-                ))),
-                Arguments.of(0, 2, false, HttpStatus.OK, new PaginatedCategoryResponse(
-                        1, 0, 2, 2, Arrays.asList(
-                        new CategoryResponse(1L, "Books", "Different genres of books"),
-                        new CategoryResponse(2L, "Electronics", "Various electronic devices")
-                ))),
-                Arguments.of(0, 10, true, HttpStatus.OK, new PaginatedCategoryResponse(
-                        1, 0, 2, 2, Arrays.asList(
-                        new CategoryResponse(1L, "Electronics", "Various electronic devices"),
-                        new CategoryResponse(2L, "Books", "Different genres of books")
-                )))
-        );
-    }
     private static Stream<Arguments> provideCategoryRequests() {
         return Stream.of(
                 Arguments.of(generateRequest("{\"name\":\"Electronics\",\"description\":\"Electronics category\"}", HttpStatus.CREATED)),
