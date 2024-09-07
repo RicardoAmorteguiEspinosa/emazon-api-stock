@@ -1,5 +1,5 @@
 package com.bootcamp_2024_2.api_stock.domain.api.usecase;
-import com.bootcamp_2024_2.api_stock.adapters.driven.jpa.mysql.exception.ElementAlreadyExistsException;
+import com.bootcamp_2024_2.api_stock.domain.exception.ElementAlreadyExistsException;
 import com.bootcamp_2024_2.api_stock.domain.model.Category;
 import com.bootcamp_2024_2.api_stock.domain.spi.ICategoryPersistencePort;
 import com.bootcamp_2024_2.api_stock.domain.util.PaginatedResult;

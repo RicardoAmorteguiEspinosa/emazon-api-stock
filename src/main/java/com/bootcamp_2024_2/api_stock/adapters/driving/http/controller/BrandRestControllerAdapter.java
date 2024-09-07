@@ -6,9 +6,9 @@ import com.bootcamp_2024_2.api_stock.adapters.driving.http.dto.response.Creation
 import com.bootcamp_2024_2.api_stock.adapters.driving.http.dto.response.PaginatedResponse;
 import com.bootcamp_2024_2.api_stock.adapters.driving.http.mapper.IBrandRequestMapper;
 import com.bootcamp_2024_2.api_stock.adapters.driving.http.mapper.IBrandResponseMapper;
-import com.bootcamp_2024_2.api_stock.adapters.util.HttpStatusCodes;
-import com.bootcamp_2024_2.api_stock.adapters.util.Messages;
-import com.bootcamp_2024_2.api_stock.adapters.util.PaginationConstants;
+import com.bootcamp_2024_2.api_stock.adapters.util.constants.HttpStatusCodesConstants;
+import com.bootcamp_2024_2.api_stock.adapters.util.constants.MessagesConstants;
+import com.bootcamp_2024_2.api_stock.adapters.util.constants.PaginationConstants;
 import com.bootcamp_2024_2.api_stock.configuration.exceptionhandler.ExceptionResponse;
 import com.bootcamp_2024_2.api_stock.domain.api.IBrandServicePort;
 import io.swagger.v3.oas.annotations.Operation;
@@ -33,13 +33,13 @@ public class BrandRestControllerAdapter {
     private final IBrandRequestMapper brandRequestMapping;
     private final IBrandResponseMapper brandResponseMapper;
 
-    @Operation(summary = Messages.ADD_NEW_BRAND_SUMMARY)
+    @Operation(summary = MessagesConstants.ADD_NEW_BRAND_SUMMARY)
     @ApiResponses(value = {
-            @ApiResponse(responseCode = HttpStatusCodes.CREATED, description = Messages.BRAND_ADDED_SUCCESSFULLY,
+            @ApiResponse(responseCode = HttpStatusCodesConstants.CREATED, description = MessagesConstants.BRAND_ADDED_SUCCESSFULLY,
                     content = @Content(schema = @Schema(implementation = CreationResponse.class))),
-            @ApiResponse(responseCode = HttpStatusCodes.BAD_REQUEST, description = Messages.INVALID_REQUEST_FORMAT,
+            @ApiResponse(responseCode = HttpStatusCodesConstants.BAD_REQUEST, description = MessagesConstants.INVALID_REQUEST_FORMAT,
                     content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
-            @ApiResponse(responseCode = HttpStatusCodes.INTERNAL_SERVER_ERROR, description = Messages.INTERNAL_SERVER_ERROR,
+            @ApiResponse(responseCode = HttpStatusCodesConstants.INTERNAL_SERVER_ERROR, description = MessagesConstants.INTERNAL_SERVER_ERROR,
                     content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
     })
     @PostMapping("/")
@@ -48,18 +48,18 @@ public class BrandRestControllerAdapter {
                 brandServicePort.saveBrand(brandRequestMapping.addRequestToBrand(brandRequest)));
 
         CreationResponse<BrandResponse> response = CreationResponse.<BrandResponse>builder()
-                .withMessage(Messages.BRAND_SUCCESSFULLY_RECORDED)
+                .withMessage(MessagesConstants.BRAND_SUCCESSFULLY_RECORDED)
                 .withData(brandResponse)
                 .build();
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @Operation(summary = Messages.GET_ALL_BRANDS_WITH_PAGINATION)
+    @Operation(summary = MessagesConstants.GET_ALL_BRANDS_WITH_PAGINATION)
     @ApiResponses(value = {
-            @ApiResponse(responseCode = HttpStatusCodes.OK, description = Messages.BRANDS_RETRIEVED_SUCCESSFULLY,
+            @ApiResponse(responseCode = HttpStatusCodesConstants.OK, description = MessagesConstants.BRANDS_RETRIEVED_SUCCESSFULLY,
                     content = @Content(schema = @Schema(implementation = PaginatedResponse.class))),
-            @ApiResponse(responseCode = HttpStatusCodes.INTERNAL_SERVER_ERROR, description = Messages.INTERNAL_SERVER_ERROR,
+            @ApiResponse(responseCode = HttpStatusCodesConstants.INTERNAL_SERVER_ERROR, description = MessagesConstants.INTERNAL_SERVER_ERROR,
                     content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
     })
     @GetMapping("/")

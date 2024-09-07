@@ -1,7 +1,9 @@
 package com.bootcamp_2024_2.api_stock.configuration.exceptionhandler;
 
-import com.bootcamp_2024_2.api_stock.adapters.driven.jpa.mysql.exception.ElementAlreadyExistsException;
+import com.bootcamp_2024_2.api_stock.domain.exception.DuplicateCategoryException;
+import com.bootcamp_2024_2.api_stock.domain.exception.ElementAlreadyExistsException;
 import com.bootcamp_2024_2.api_stock.configuration.Constants;
+import com.bootcamp_2024_2.api_stock.domain.exception.InvalidCategoryCountException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,5 +31,18 @@ public class ControllerAdvisor {
                 String.format(Constants.ELEMENT_ALREADY_EXISTS_EXCEPTION_MESSAGE, exception.getMessage()),
                 HttpStatus.BAD_REQUEST.toString(), LocalDateTime.now()));
     }
-
+    @ExceptionHandler(DuplicateCategoryException.class)
+    public ResponseEntity<ExceptionResponse> handleDuplicateCategoryException(DuplicateCategoryException exception) {
+        return ResponseEntity.badRequest().body(new ExceptionResponse(
+                String.format(Constants.DUPLICATE_CATEGORY, exception.getMessage()),
+                HttpStatus.BAD_REQUEST.toString(),
+                LocalDateTime.now()));
+    }
+    @ExceptionHandler(InvalidCategoryCountException.class)
+    public ResponseEntity<ExceptionResponse> handleInvalidCategoryCountException(InvalidCategoryCountException exception) {
+        return ResponseEntity.badRequest().body(new ExceptionResponse(
+                String.format(Constants.INVALID_CATEGORY_COUNT, exception.getMessage()),
+                HttpStatus.BAD_REQUEST.toString(),
+                LocalDateTime.now()));
+    }
 }
