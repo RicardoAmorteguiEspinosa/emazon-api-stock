@@ -1,4 +1,4 @@
-package com.bootcamp_2024_2.api_stock.domain.util;
+package com.bootcamp_2024_2.api_stock.domain.util.paginated;
 
 import java.util.List;
 

@@ -6,7 +6,7 @@ import com.bootcamp_2024_2.api_stock.adapters.driving.http.mapper.ICategoryReque
 import com.bootcamp_2024_2.api_stock.adapters.driving.http.mapper.ICategoryResponseMapper;
 import com.bootcamp_2024_2.api_stock.domain.api.ICategoryServicePort;
 import com.bootcamp_2024_2.api_stock.domain.model.Category;
-import com.bootcamp_2024_2.api_stock.domain.util.PaginatedResult;
+import com.bootcamp_2024_2.api_stock.domain.util.paginated.PaginatedResult;
 import com.bootcamp_2024_2.api_stock.testData.CategoryFactory;
 import com.bootcamp_2024_2.api_stock.testData.RequestCase;
 import org.junit.jupiter.api.BeforeEach;

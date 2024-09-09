@@ -52,4 +52,5 @@ public class Item {
     public void setCategoriesList(List<Category> categoriesList) {
         this.categoriesList = categoriesList;
     }
+
 }

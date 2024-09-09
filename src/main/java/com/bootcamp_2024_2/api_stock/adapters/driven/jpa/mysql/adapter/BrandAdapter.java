@@ -5,7 +5,7 @@ import com.bootcamp_2024_2.api_stock.adapters.driven.jpa.mysql.mapper.IBrandEnti
 import com.bootcamp_2024_2.api_stock.adapters.driven.jpa.mysql.repository.IBrandRepository;
 import com.bootcamp_2024_2.api_stock.domain.model.Brand;
 import com.bootcamp_2024_2.api_stock.domain.spi.IBrandPersistencePort;
-import com.bootcamp_2024_2.api_stock.domain.util.PaginatedResult;
+import com.bootcamp_2024_2.api_stock.domain.util.paginated.PaginatedResult;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

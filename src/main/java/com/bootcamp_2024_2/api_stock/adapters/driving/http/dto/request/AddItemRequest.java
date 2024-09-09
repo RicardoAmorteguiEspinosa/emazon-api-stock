@@ -24,15 +24,14 @@ public record AddItemRequest(
         int quantity,
 
         @NotNull(message = MessagesConstants.PRICE_CANNOT_BE_NULL)
-        @DecimalMin(value = LengthConstants.MIN_PRICE, inclusive = false, message = MessagesConstants.PRICE_MIN_VALIDATION)
+        @DecimalMin(value = LengthConstants.MIN_PRICE, inclusive = false,
+                message = MessagesConstants.PRICE_MIN_VALIDATION)
         float price,
 
         @NotNull(message = MessagesConstants.BRAND_ID_CANNOT_BE_NULL)
         Long idBrand,
-
-        @NotNull(message =MessagesConstants.CATEGORIES_LIST_CANNOT_BE_NULL)
-       // @Size(min = LengthConstants.MIN_CATEGORIES, max =LengthConstants.MAX_CATEGORIES,
-               // message = MessagesConstants.CATEGORIES_LIST_SIZE_VALIDATION)
-        //@UniqueIds
+        @Size(min = LengthConstants.MIN_CATEGORIES, max =LengthConstants.MAX_CATEGORIES,
+                message = MessagesConstants.CATEGORIES_LIST_SIZE_VALIDATION)
+        @UniqueIds
         List<AddCategoryByItemRequest> categoriesIdList) {
 }

@@ -15,6 +15,11 @@ public class CategoryFactory {
         return new Category(null, name, description);
     }
 
+    public static Category createCategoryId() {
+        long id = random.nextInt(100) + 1;
+        return new Category (id,null, null);
+    }
+
     private static String getRandomName() {
         String[] names = new String[] { "Electronics", "Clothing", "Books", "Home & Kitchen", "Sports", "Toys", "Beauty", "Automotive", "Groceries", "Health" };
         return names[random.nextInt(names.length)];
@@ -27,5 +32,4 @@ public class CategoryFactory {
         }
         return categories;
     }
-
 }

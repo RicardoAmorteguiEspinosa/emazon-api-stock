@@ -4,7 +4,7 @@ import com.bootcamp_2024_2.api_stock.domain.exception.ElementAlreadyExistsExcept
 import com.bootcamp_2024_2.api_stock.domain.api.IBrandServicePort;
 import com.bootcamp_2024_2.api_stock.domain.model.Brand;
 import com.bootcamp_2024_2.api_stock.domain.spi.IBrandPersistencePort;
-import com.bootcamp_2024_2.api_stock.domain.util.PaginatedResult;
+import com.bootcamp_2024_2.api_stock.domain.util.paginated.PaginatedResult;
 
 public class BrandUseCase implements IBrandServicePort {
     private final IBrandPersistencePort brandPersistencePort;

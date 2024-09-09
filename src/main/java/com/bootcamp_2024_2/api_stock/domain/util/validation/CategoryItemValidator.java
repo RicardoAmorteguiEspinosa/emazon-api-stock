@@ -29,5 +29,8 @@ public class CategoryItemValidator {
             throw new DuplicateCategoryException(duplicateIds);
         }
     }
+
+    private CategoryItemValidator() {
+    }
 }
 
