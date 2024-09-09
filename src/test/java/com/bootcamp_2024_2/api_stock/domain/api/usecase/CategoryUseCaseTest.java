@@ -1,8 +1,8 @@
 package com.bootcamp_2024_2.api_stock.domain.api.usecase;
-import com.bootcamp_2024_2.api_stock.adapters.driven.jpa.mysql.exception.ElementAlreadyExistsException;
+import com.bootcamp_2024_2.api_stock.domain.exception.ElementAlreadyExistsException;
 import com.bootcamp_2024_2.api_stock.domain.model.Category;
 import com.bootcamp_2024_2.api_stock.domain.spi.ICategoryPersistencePort;
-import com.bootcamp_2024_2.api_stock.domain.util.PaginatedResult;
+import com.bootcamp_2024_2.api_stock.domain.util.paginated.PaginatedResult;
 import com.bootcamp_2024_2.api_stock.testData.CategoryFactory;
 import com.bootcamp_2024_2.api_stock.testData.PaginatedFactory;
 import org.junit.jupiter.api.DisplayName;

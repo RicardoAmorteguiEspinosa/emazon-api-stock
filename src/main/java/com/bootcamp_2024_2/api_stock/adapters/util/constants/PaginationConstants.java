@@ -1,4 +1,4 @@
-package com.bootcamp_2024_2.api_stock.adapters.util;
+package com.bootcamp_2024_2.api_stock.adapters.util.constants;
 
 public class PaginationConstants {
     public static final String PAGE = "0";

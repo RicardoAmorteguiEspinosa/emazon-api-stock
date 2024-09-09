@@ -3,6 +3,9 @@ package com.bootcamp_2024_2.api_stock.adapters.driven.jpa.mysql.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Entity
 @Table(name = "Category")
 @AllArgsConstructor
@@ -21,4 +24,6 @@ public class CategoryEntity {
 
     private String description;
 
+    @ManyToMany(mappedBy = "categoriesList")
+    private Set<ItemEntity> itemList = new HashSet<>();
 }

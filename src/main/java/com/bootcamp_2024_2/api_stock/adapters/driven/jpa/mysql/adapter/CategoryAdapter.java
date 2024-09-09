@@ -4,7 +4,7 @@ import com.bootcamp_2024_2.api_stock.adapters.driven.jpa.mysql.entity.CategoryEn
 import com.bootcamp_2024_2.api_stock.adapters.driven.jpa.mysql.mapper.ICategoryEntityMapper;
 import com.bootcamp_2024_2.api_stock.adapters.driven.jpa.mysql.repository.ICategoryRepository;
 import com.bootcamp_2024_2.api_stock.domain.model.Category;
-import com.bootcamp_2024_2.api_stock.domain.util.PaginatedResult;
+import com.bootcamp_2024_2.api_stock.domain.util.paginated.PaginatedResult;
 import com.bootcamp_2024_2.api_stock.domain.spi.ICategoryPersistencePort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

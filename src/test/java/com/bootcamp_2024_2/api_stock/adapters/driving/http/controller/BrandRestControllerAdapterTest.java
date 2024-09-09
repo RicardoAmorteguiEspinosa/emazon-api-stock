@@ -9,7 +9,7 @@ import com.bootcamp_2024_2.api_stock.adapters.driving.http.mapper.IBrandResponse
 import com.bootcamp_2024_2.api_stock.configuration.exceptionhandler.ControllerAdvisor;
 import com.bootcamp_2024_2.api_stock.domain.api.IBrandServicePort;
 import com.bootcamp_2024_2.api_stock.domain.model.Brand;
-import com.bootcamp_2024_2.api_stock.domain.util.PaginatedResult;
+import com.bootcamp_2024_2.api_stock.domain.util.paginated.PaginatedResult;
 import com.bootcamp_2024_2.api_stock.testData.BrandFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -175,8 +175,8 @@ class BrandRestControllerAdapterTest {
                 Arguments.of(new AddBrandRequest("This is a very long name that exceeds the maximum allowed length", "Valid description"), "The name must be between 2 and 50 characters"),
                 Arguments.of(new AddBrandRequest("Valid name", "This is a very long description that exceeds the maximum allowed length of 120 characters, which should trigger a validation error."), "Description must be between 2 and 120 characters"),
                 Arguments.of(new AddBrandRequest("Valid name", "x"), "Description must be between 2 and 120 characters"),
-                Arguments.of(new AddBrandRequest(null, "Valid description"), "Field 'name' cannot be null"),
-                Arguments.of(new AddBrandRequest("Valid name", null), "Field 'description' cannot be null")
+                Arguments.of(new AddBrandRequest(null, "Valid description"), "Name cannot be blank"),
+                Arguments.of(new AddBrandRequest("Valid name", null), "Description cannot be blank")
         );
     }
 
