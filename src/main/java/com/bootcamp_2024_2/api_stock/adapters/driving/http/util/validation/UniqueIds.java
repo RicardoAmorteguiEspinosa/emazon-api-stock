@@ -1,6 +1,6 @@
-package com.bootcamp_2024_2.api_stock.adapters.util.validation;
+package com.bootcamp_2024_2.api_stock.adapters.driving.http.util.validation;
 
-import com.bootcamp_2024_2.api_stock.adapters.util.constants.MessagesConstants;
+import com.bootcamp_2024_2.api_stock.adapters.driving.http.util.constants.MessagesConstants;
 import jakarta.validation.Payload;
 import jakarta.validation.Constraint;
 

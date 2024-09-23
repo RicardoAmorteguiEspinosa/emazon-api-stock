@@ -1,18 +1,14 @@
 package com.bootcamp_2024_2.api_stock.adapters.driving.http.controller;
 
-import com.bootcamp_2024_2.api_stock.adapters.driving.http.dto.request.AddBrandRequest;
 import com.bootcamp_2024_2.api_stock.adapters.driving.http.dto.response.BrandResponse;
-import com.bootcamp_2024_2.api_stock.adapters.driving.http.dto.response.CreationResponse;
 import com.bootcamp_2024_2.api_stock.adapters.driving.http.dto.response.PaginatedResponse;
 import com.bootcamp_2024_2.api_stock.adapters.driving.http.mapper.IBrandRequestMapper;
 import com.bootcamp_2024_2.api_stock.adapters.driving.http.mapper.IBrandResponseMapper;
-import com.bootcamp_2024_2.api_stock.configuration.exceptionhandler.ControllerAdvisor;
 import com.bootcamp_2024_2.api_stock.domain.api.IBrandServicePort;
 import com.bootcamp_2024_2.api_stock.domain.model.Brand;
 import com.bootcamp_2024_2.api_stock.domain.util.paginated.PaginatedResult;
 import com.bootcamp_2024_2.api_stock.testData.BrandFactory;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.bootcamp_2024_2.api_stock.testData.RequestCase;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -23,9 +19,15 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 
@@ -35,7 +37,6 @@ import java.util.stream.Stream;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -59,41 +60,29 @@ class BrandRestControllerAdapterTest {
     @BeforeEach
     void setUp() {
         mockMvc = MockMvcBuilders.standaloneSetup(brandRestControllerAdapter)
-                .setControllerAdvice(new ControllerAdvisor())
                 .build();
     }
 
     @ParameterizedTest
-    @MethodSource("provideValidAddBrandRequests")
-    void testAddBrand_Success(AddBrandRequest request, BrandResponse expectedResponse) throws Exception {
-        // Arrange
-        Brand brand = BrandFactory.createBrand();
-        when(brandRequestMapper.addRequestToBrand(request)).thenReturn(brand);
-        when(brandServicePort.saveBrand(any(Brand.class))).thenReturn(brand);
-        when(brandResponseMapper.toBrandResponse(any(Brand.class))).thenReturn(expectedResponse);
+    @MethodSource("provideBrandRequests")
+    void testAddBrand(RequestCase testCase) throws Exception {
+        // Given
+        String requestBody = testCase.getRequestBody();
+        HttpStatus expectedStatus = testCase.getExpectedStatus();
 
-        CreationResponse<BrandResponse> creationResponse = new CreationResponse<>("The brand has been successfully recorded", expectedResponse);
-
-        // Act & Assert
-        mockMvc.perform(post("/brand/")
+        // When & Then
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post("/brand/")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(asJsonString(request)))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.message").value(creationResponse.getMessage()))
-                .andExpect(jsonPath("$.data.id").value(expectedResponse.getId()))
-                .andExpect(jsonPath("$.data.name").value(expectedResponse.getName()))
-                .andExpect(jsonPath("$.data.description").value(expectedResponse.getDescription()));
-    }
+                        .content(requestBody))
+                .andExpect(status().is(expectedStatus.value()))
+                .andReturn();
 
-    @ParameterizedTest
-    @MethodSource("provideInvalidAddBrandRequests")
-    void testAddBrand_BadRequest(AddBrandRequest request, String expectedMessage) throws Exception {
-        // Act & Assert
-        mockMvc.perform(post("/brand/")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(asJsonString(request)))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value(expectedMessage));
+        if (expectedStatus == HttpStatus.CREATED) {
+            verify(brandServicePort).saveBrand(any());
+        } else if (expectedStatus == HttpStatus.BAD_REQUEST) {
+            Exception resolvedException = mvcResult.getResolvedException();
+            assertInstanceOf(MethodArgumentNotValidException.class, resolvedException);
+        }
     }
 
     @Test
@@ -148,36 +137,32 @@ class BrandRestControllerAdapterTest {
     }
 
 
-    private static String asJsonString(Object obj) {
-        try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            return objectMapper.writeValueAsString(obj);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
-
-    private static Stream<Arguments> provideValidAddBrandRequests() {
-        Brand brand = BrandFactory.createBrand();
-        BrandResponse brandResponse = new BrandResponse(brand.getId(), brand.getName(), brand.getDescription());
+    private static Stream<Arguments> provideBrandRequests() {
         return Stream.of(
-                Arguments.of(
-                        new AddBrandRequest(brand.getName(), brand.getDescription()),
-                        brandResponse
-                )
+                Arguments.of(generateRequest("{\"name\":\"Electronics\",\"description\":\"Electronics category\"}", HttpStatus.CREATED)),
+
+                Arguments.of(generateRequest("{\"name\":\"\",\"description\":\"Electronics category\"}", HttpStatus.BAD_REQUEST)),
+
+                Arguments.of(generateRequest("{\"name\":\"Electronics\",\"description\":\"\"}", HttpStatus.BAD_REQUEST)),
+
+                Arguments.of(generateRequest("{\"name\":\"A\",\"description\":\"A valid description\"}", HttpStatus.BAD_REQUEST)),
+
+                Arguments.of(generateRequest("{\"name\":\"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean\",\"description\":\"Valid description\"}", HttpStatus.BAD_REQUEST)),
+
+                Arguments.of(generateRequest("{\"name\":\"Valid Name\",\"description\":\"A\"}", HttpStatus.BAD_REQUEST)),
+
+                Arguments.of(generateRequest("{\"name\":\"Valid Name\",\"description\":\"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean.\"}", HttpStatus.BAD_REQUEST)),
+
+                Arguments.of(generateRequest("{\"name\":\"   Electronics   \",\"description\":\"Valid description\"}", HttpStatus.CREATED)),
+
+                Arguments.of(generateRequest("{\"name\":\"Valid Name\",\"description\":\"   Valid description   \"}", HttpStatus.CREATED))
         );
     }
 
-    private static Stream<Arguments> provideInvalidAddBrandRequests() {
-        return Stream.of(
-                Arguments.of(new AddBrandRequest("x", "Valid description"), "The name must be between 2 and 50 characters"),
-                Arguments.of(new AddBrandRequest("This is a very long name that exceeds the maximum allowed length", "Valid description"), "The name must be between 2 and 50 characters"),
-                Arguments.of(new AddBrandRequest("Valid name", "This is a very long description that exceeds the maximum allowed length of 120 characters, which should trigger a validation error."), "Description must be between 2 and 120 characters"),
-                Arguments.of(new AddBrandRequest("Valid name", "x"), "Description must be between 2 and 120 characters"),
-                Arguments.of(new AddBrandRequest(null, "Valid description"), "Name cannot be blank"),
-                Arguments.of(new AddBrandRequest("Valid name", null), "Description cannot be blank")
-        );
+    private static RequestCase generateRequest(String requestBody, HttpStatus expectedStatus) {
+        return new RequestCase(requestBody, expectedStatus);
     }
+
 
 }

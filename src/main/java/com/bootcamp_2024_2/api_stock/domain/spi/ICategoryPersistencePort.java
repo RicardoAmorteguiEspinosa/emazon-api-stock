@@ -5,7 +5,9 @@ import com.bootcamp_2024_2.api_stock.domain.util.paginated.PaginatedResult;
 
 public interface ICategoryPersistencePort {
     boolean existsByName(String name);
+
+    boolean  existsById(Long id);
     Category saveCategory(Category category);
-    PaginatedResult<Category> getAllCategories(Integer page, Integer size, boolean ascendingOrder);
+    PaginatedResult<Category> getAllCategories(Integer page, Integer size, boolean sortDirection);
 
 }

@@ -6,9 +6,9 @@ import com.bootcamp_2024_2.api_stock.adapters.driving.http.dto.response.Creation
 import com.bootcamp_2024_2.api_stock.adapters.driving.http.dto.response.PaginatedResponse;
 import com.bootcamp_2024_2.api_stock.adapters.driving.http.mapper.IBrandRequestMapper;
 import com.bootcamp_2024_2.api_stock.adapters.driving.http.mapper.IBrandResponseMapper;
-import com.bootcamp_2024_2.api_stock.adapters.util.constants.HttpStatusCodesConstants;
-import com.bootcamp_2024_2.api_stock.adapters.util.constants.MessagesConstants;
-import com.bootcamp_2024_2.api_stock.adapters.util.constants.PaginationConstants;
+import com.bootcamp_2024_2.api_stock.adapters.driving.http.util.constants.HttpStatusCodesConstants;
+import com.bootcamp_2024_2.api_stock.adapters.driving.http.util.constants.MessagesConstants;
+import com.bootcamp_2024_2.api_stock.adapters.driving.http.util.constants.PaginationConstants;
 import com.bootcamp_2024_2.api_stock.configuration.exceptionhandler.ExceptionResponse;
 import com.bootcamp_2024_2.api_stock.domain.api.IBrandServicePort;
 import io.swagger.v3.oas.annotations.Operation;
@@ -57,7 +57,7 @@ public class BrandRestControllerAdapter {
 
     @Operation(summary = MessagesConstants.GET_ALL_BRANDS_WITH_PAGINATION)
     @ApiResponses(value = {
-            @ApiResponse(responseCode = HttpStatusCodesConstants.OK, description = MessagesConstants.BRANDS_RETRIEVED_SUCCESSFULLY,
+            @ApiResponse(responseCode = HttpStatusCodesConstants.CREATED, description = MessagesConstants.BRANDS_RETRIEVED_SUCCESSFULLY,
                     content = @Content(schema = @Schema(implementation = PaginatedResponse.class))),
             @ApiResponse(responseCode = HttpStatusCodesConstants.INTERNAL_SERVER_ERROR, description = MessagesConstants.INTERNAL_SERVER_ERROR,
                     content = @Content(schema = @Schema(implementation = ExceptionResponse.class))),
@@ -66,8 +66,8 @@ public class BrandRestControllerAdapter {
     public ResponseEntity<PaginatedResponse<BrandResponse>> getAllBrands(
             @PositiveOrZero @RequestParam(required = false, defaultValue = PaginationConstants.PAGE) Integer page,
             @Min(value = 1) @RequestParam(required = false, defaultValue = PaginationConstants.SIZE) Integer size,
-            @RequestParam(required = false, defaultValue = PaginationConstants.ASCENDING_ORDER) boolean ascendingOrder) {
-        return ResponseEntity.ok(brandResponseMapper.toPaginatedResponse(brandServicePort.getAllBrands(page, size, ascendingOrder)));
+            @RequestParam(required = false, defaultValue = PaginationConstants.ASCENDING_ORDER) boolean sortDirection) {
+        return ResponseEntity.ok(brandResponseMapper.toPaginatedResponse(brandServicePort.getAllBrands(page, size, sortDirection)));
     }
 
 

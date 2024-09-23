@@ -6,9 +6,9 @@ import com.bootcamp_2024_2.api_stock.adapters.driving.http.dto.response.Creation
 import com.bootcamp_2024_2.api_stock.adapters.driving.http.dto.response.PaginatedResponse;
 import com.bootcamp_2024_2.api_stock.adapters.driving.http.mapper.ICategoryRequestMapper;
 import com.bootcamp_2024_2.api_stock.adapters.driving.http.mapper.ICategoryResponseMapper;
-import com.bootcamp_2024_2.api_stock.adapters.util.constants.HttpStatusCodesConstants;
-import com.bootcamp_2024_2.api_stock.adapters.util.constants.MessagesConstants;
-import com.bootcamp_2024_2.api_stock.adapters.util.constants.PaginationConstants;
+import com.bootcamp_2024_2.api_stock.adapters.driving.http.util.constants.HttpStatusCodesConstants;
+import com.bootcamp_2024_2.api_stock.adapters.driving.http.util.constants.MessagesConstants;
+import com.bootcamp_2024_2.api_stock.adapters.driving.http.util.constants.PaginationConstants;
 import com.bootcamp_2024_2.api_stock.configuration.exceptionhandler.ExceptionResponse;
 import com.bootcamp_2024_2.api_stock.domain.api.ICategoryServicePort;
 import io.swagger.v3.oas.annotations.Operation;
@@ -65,8 +65,8 @@ public class CategoryRestControllerAdapter {
     public ResponseEntity<PaginatedResponse<CategoryResponse>> getAllCategories(
             @PositiveOrZero @RequestParam(required = false, defaultValue = PaginationConstants.PAGE) Integer page,
             @Min(value = 1) @RequestParam(required = false, defaultValue = PaginationConstants.SIZE) Integer size,
-            @RequestParam(required = false, defaultValue = PaginationConstants.ASCENDING_ORDER) boolean ascendingOrder) {
+            @RequestParam(required = false, defaultValue = PaginationConstants.ASCENDING_ORDER) boolean sortDirection) {
                 return ResponseEntity.ok(categoryResponseMapping.
-                toPaginatedResponse(categoryServicePort.getAllCategories(page, size, ascendingOrder)));
+                toPaginatedResponse(categoryServicePort.getAllCategories(page, size, sortDirection)));
     }
     }

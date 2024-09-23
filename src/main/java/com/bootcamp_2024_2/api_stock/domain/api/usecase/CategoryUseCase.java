@@ -5,6 +5,8 @@ import com.bootcamp_2024_2.api_stock.domain.api.ICategoryServicePort;
 import com.bootcamp_2024_2.api_stock.domain.model.Category;
 import com.bootcamp_2024_2.api_stock.domain.util.paginated.PaginatedResult;
 import com.bootcamp_2024_2.api_stock.domain.spi.ICategoryPersistencePort;
+import com.bootcamp_2024_2.api_stock.domain.util.validation.CategoryValidator;
+
 
 public class CategoryUseCase implements ICategoryServicePort {
 
@@ -16,6 +18,7 @@ public class CategoryUseCase implements ICategoryServicePort {
 
     @Override
     public Category saveCategory(Category category) {
+        CategoryValidator.validateCategory(category);
 
         if(categoryPersistencePort.existsByName(category.getName())) {
             throw new ElementAlreadyExistsException(category.getName());
@@ -23,9 +26,9 @@ public class CategoryUseCase implements ICategoryServicePort {
         return categoryPersistencePort.saveCategory(category);
     }
 
-
     @Override
-    public PaginatedResult<Category> getAllCategories(Integer page, Integer size, boolean ascendingOrder) {
-        return categoryPersistencePort.getAllCategories(page, size, ascendingOrder);
+    public PaginatedResult<Category> getAllCategories(Integer page, Integer size, boolean sortDirection) {
+        return categoryPersistencePort.getAllCategories(page, size, sortDirection);
     }
 }
+

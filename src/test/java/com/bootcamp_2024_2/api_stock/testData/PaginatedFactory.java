@@ -2,6 +2,7 @@ package com.bootcamp_2024_2.api_stock.testData;
 
 import com.bootcamp_2024_2.api_stock.domain.model.Brand;
 import com.bootcamp_2024_2.api_stock.domain.model.Category;
+import com.bootcamp_2024_2.api_stock.domain.model.Item;
 import com.bootcamp_2024_2.api_stock.domain.util.paginated.PaginatedResult;
 import java.util.List;
 import java.util.Random;
@@ -28,5 +29,12 @@ public class PaginatedFactory {
         int size = random.nextInt(10) + 1;
         List<Brand> brands = BrandFactory.createBrandList(size);
         return createPaginatedResult(brands, page, size);
+    }
+
+    public static PaginatedResult<Item> createPaginatedItems() {
+        int page = random.nextInt(10) + 1;
+        int size = random.nextInt(10) + 1;
+        List<Item> items = ItemFactory.createItemListWithCategories(size, 2);
+        return createPaginatedResult(items, page, size);
     }
 }

@@ -1,4 +1,4 @@
-package com.bootcamp_2024_2.api_stock.adapters.util.constants;
+package com.bootcamp_2024_2.api_stock.adapters.driving.http.util.constants;
 
 public class HttpStatusCodesConstants {
     public static final String CREATED = "201";

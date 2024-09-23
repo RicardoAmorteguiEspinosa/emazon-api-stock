@@ -1,4 +1,4 @@
-package com.bootcamp_2024_2.api_stock.adapters.util.constants;
+package com.bootcamp_2024_2.api_stock.adapters.driving.http.util.constants;
 
 public class MessagesConstants {
     public static final String BRAND_SUCCESSFULLY_RECORDED = "The brand has been successfully recorded";
@@ -27,7 +27,7 @@ public class MessagesConstants {
     public static final String NAME_CANNOT_BE_BLANK = "Name cannot be blank";
     public static final String DESCRIPTION_CANNOT_BE_BLANK = "Description cannot be blank";
     public static final String ADD_NEW_ITEM_SUMMARY = "Add a new item to the system.";
-
+    public static final String ITEMS_RETRIEVED_SUCCESSFULLY = "Items retrieved successfully";
 
     private MessagesConstants() {
         throw new UnsupportedOperationException("The Messages class cannot be instantiated");

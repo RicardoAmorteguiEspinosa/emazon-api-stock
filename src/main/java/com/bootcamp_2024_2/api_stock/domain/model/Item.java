@@ -1,6 +1,7 @@
 package com.bootcamp_2024_2.api_stock.domain.model;
 
 import java.util.List;
+import java.util.Optional;
 
 public class Item {
     private final Long id;
@@ -8,16 +9,16 @@ public class Item {
     private final String description;
     private final int quantity;
     private final float price;
-    private final Long idBrand;
+    private Brand brand;
     private List<Category> categoriesList;
 
-    public Item(Long id, String name, String description, int quantity, float price, Long idBrand, List<Category> categoriesList) {
+    public Item(Long id, String name, String description, int quantity, float price, Brand brand, List<Category> categoriesList) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.quantity = quantity;
         this.price = price;
-        this.idBrand = idBrand;
+        this.brand = brand;
         this.categoriesList = categoriesList;
     }
 
@@ -41,8 +42,8 @@ public class Item {
         return price;
     }
 
-    public Long getIdBrand() {
-        return idBrand;
+    public Brand getBrand() {
+        return brand;
     }
 
     public List<Category> getCategoriesList() {
@@ -51,6 +52,15 @@ public class Item {
 
     public void setCategoriesList(List<Category> categoriesList) {
         this.categoriesList = categoriesList;
+    }
+
+    public void setBrand(Brand brand) {
+        this.brand = brand;
+    }
+
+    public Optional<Category> getCategories() {
+        return categoriesList.stream().findFirst();
+
     }
 
 }

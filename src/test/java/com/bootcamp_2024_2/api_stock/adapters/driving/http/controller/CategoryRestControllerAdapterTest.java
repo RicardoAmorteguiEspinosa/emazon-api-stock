@@ -23,7 +23,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.util.List;
@@ -33,6 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -85,11 +85,12 @@ class CategoryRestControllerAdapterTest {
 
         List<Category> categoryList = CategoryFactory.createCategoryList(2);
 
-        PaginatedResult<Category> paginate = new PaginatedResult<>(
+        PaginatedResult<Category> paginateResult = new PaginatedResult<>(
                 1,
                 0,
                 2,
                 10,
+
                 categoryList
         );
 
@@ -97,13 +98,13 @@ class CategoryRestControllerAdapterTest {
         paginatedResponse.setItems(categoryList.stream().map(category ->
                 new CategoryResponse(category.getId(), category.getName(), category.getDescription())
         ).toList());
-        paginatedResponse.setTotalPages(paginate.getTotalPages());
-        paginatedResponse.setCurrentPage(paginate.getCurrentPage());
-        paginatedResponse.setTotalItems(paginate.getTotalItems());
-        paginatedResponse.setPageSize(paginate.getPageSize());
+        paginatedResponse.setTotalPages(paginateResult.getTotalPages());
+        paginatedResponse.setCurrentPage(paginateResult.getCurrentPage());
+        paginatedResponse.setTotalItems(paginateResult.getTotalItems());
+        paginatedResponse.setPageSize(paginateResult.getPageSize());
 
-        when(categoryServicePort.getAllCategories(page, size, ascendingOrder)).thenReturn(paginate);
-        when(categoryResponseMapper.toPaginatedResponse(paginate)).thenReturn(paginatedResponse);
+        when(categoryServicePort.getAllCategories(page, size, ascendingOrder)).thenReturn(paginateResult);
+        when(categoryResponseMapper.toPaginatedResponse(paginateResult)).thenReturn(paginatedResponse);
 
         // When & Then
         mockMvc.perform(get("/category/")

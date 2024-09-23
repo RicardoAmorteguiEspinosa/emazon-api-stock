@@ -2,7 +2,6 @@ package com.bootcamp_2024_2.api_stock.adapters.driven.jpa.mysql.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -17,7 +16,6 @@ import java.util.Set;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode
 public class ItemEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,7 +35,7 @@ public class ItemEntity {
     private BigDecimal price;
 
     @ManyToOne
-    @JoinColumn(name = "brand_id", nullable = false, foreignKey = @ForeignKey(name = "FK_Item_Brand"))
+    @JoinColumn(name = "brand_id", referencedColumnName = "brand_id")
     private BrandEntity brand;
 
     @ManyToMany
@@ -46,5 +44,7 @@ public class ItemEntity {
             joinColumns = @JoinColumn(name = "item_id"),
             inverseJoinColumns = @JoinColumn(name = "category_id")
     )
+
     private Set<CategoryEntity> categoriesList = new HashSet<>();
+
 }

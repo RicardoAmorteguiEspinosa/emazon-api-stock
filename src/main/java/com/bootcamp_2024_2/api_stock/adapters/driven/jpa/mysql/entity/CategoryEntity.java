@@ -1,5 +1,6 @@
 package com.bootcamp_2024_2.api_stock.adapters.driven.jpa.mysql.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -12,7 +13,6 @@ import java.util.Set;
 @NoArgsConstructor
 @Getter
 @Setter
-@EqualsAndHashCode
 public class CategoryEntity {
 
     @Id
@@ -25,5 +25,6 @@ public class CategoryEntity {
     private String description;
 
     @ManyToMany(mappedBy = "categoriesList")
+    @JsonIgnore
     private Set<ItemEntity> itemList = new HashSet<>();
 }

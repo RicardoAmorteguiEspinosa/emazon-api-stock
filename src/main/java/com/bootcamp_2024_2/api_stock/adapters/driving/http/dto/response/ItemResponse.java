@@ -16,5 +16,6 @@ public class ItemResponse {
     private final int quantity;
     private final float price;
     private final Long idBrand;
+    private final String brandName;
     private List<CategoryByItemResponse> categoriesList;
 }
