@@ -10,5 +10,6 @@ public class Constants {
 
     public static final String INVALID_CATEGORY_COUNT = "Invalid number of categories: %S. Items must have between 1 and 3 categories associated.";
 
+    public static final String ERROR_FORMAT = "Error: %s";
 
 }

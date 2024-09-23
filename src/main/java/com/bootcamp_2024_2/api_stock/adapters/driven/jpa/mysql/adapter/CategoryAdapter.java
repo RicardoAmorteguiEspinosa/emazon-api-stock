@@ -25,15 +25,20 @@ public class CategoryAdapter implements ICategoryPersistencePort {
     }
 
     @Override
+    public boolean existsById(Long id) {
+        return categoryRepository.findById(id).isPresent();
+    }
+
+    @Override
     public Category saveCategory(Category category) {
         return categoryEntityMapper.toModel(categoryRepository.save(
                 categoryEntityMapper.toEntity(category)));
     }
 
     @Override
-    public PaginatedResult<Category> getAllCategories(Integer page, Integer size, boolean ascendingOrder) {
+    public PaginatedResult<Category> getAllCategories(Integer page, Integer size, boolean sortDirection) {
 
-        Sort.Direction direction = ascendingOrder ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Sort.Direction direction = sortDirection ? Sort.Direction.ASC : Sort.Direction.DESC;
         Page<CategoryEntity> categoryPage = categoryRepository.findAll(PageRequest.of(page, size, Sort.by(direction, "name")));
         List<Category> categories = categoryEntityMapper.toModelList(categoryPage.getContent());
 

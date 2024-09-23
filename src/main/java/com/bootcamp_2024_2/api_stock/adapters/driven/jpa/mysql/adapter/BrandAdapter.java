@@ -24,15 +24,19 @@ public class BrandAdapter implements IBrandPersistencePort {
     }
 
     @Override
+    public boolean existsById(Long id) {
+        return brandRepository.findById(id).isPresent();
+    }
+    @Override
     public Brand saveBrand(Brand brand) {
         return brandEntityMapper.toModel(brandRepository.save(
                 brandEntityMapper.toEntity(brand)));
     }
 
     @Override
-    public PaginatedResult<Brand> getAllBrands(Integer page, Integer size, boolean ascendingOrder) {
+    public PaginatedResult<Brand> getAllBrands(Integer page, Integer size, boolean sortDirection) {
 
-        Sort.Direction direction = ascendingOrder ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Sort.Direction direction = sortDirection ? Sort.Direction.ASC : Sort.Direction.DESC;
         Page<BrandEntity> brandPage = brandRepository.findAll(PageRequest.of(page, size, Sort.by(direction, "name")));
         List<Brand> brands = brandEntityMapper.toModelList(brandPage.getContent());
 

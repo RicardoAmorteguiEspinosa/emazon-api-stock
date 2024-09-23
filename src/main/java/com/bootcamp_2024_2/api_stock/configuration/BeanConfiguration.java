@@ -30,8 +30,8 @@ public class BeanConfiguration {
     private final ICategoryEntityMapper categoryEntityMapper;
     private final IBrandRepository brandRepository;
     private final IBrandEntityMapper brandEntityMapper;
-    private final IItemRepository iItemRepository;
-    private final IItemEntityMapper iItemEntityMapper;
+    private final IItemRepository itemRepository;
+    private final IItemEntityMapper itemEntityMapper;
 
     @Bean
     public ICategoryPersistencePort categoryPersistencePort() {
@@ -55,11 +55,11 @@ public class BeanConfiguration {
 
     @Bean
     public IItemPersistencePort itemPersistencePort() {
-        return new ItemAdapter(iItemRepository, iItemEntityMapper);
+        return new ItemAdapter(itemRepository, itemEntityMapper, categoryRepository, brandRepository);
     }
 
     @Bean
     public IItemServicePort itemServicePort() {
-        return new ItemUseCase(itemPersistencePort());
+        return new ItemUseCase(itemPersistencePort(),brandPersistencePort(),categoryPersistencePort());
     }
 }

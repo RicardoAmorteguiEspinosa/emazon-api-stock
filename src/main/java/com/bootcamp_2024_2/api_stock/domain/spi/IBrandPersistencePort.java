@@ -5,6 +5,10 @@ import com.bootcamp_2024_2.api_stock.domain.util.paginated.PaginatedResult;
 
 public interface IBrandPersistencePort {
     boolean existsByName(String name);
+
+    boolean existsById(Long id);
+
     Brand saveBrand(Brand brand);
-    PaginatedResult<Brand> getAllBrands(Integer page, Integer size, boolean ascendingOrder);
+
+    PaginatedResult<Brand> getAllBrands(Integer page, Integer size, boolean sortDirection);
 }
